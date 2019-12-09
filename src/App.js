@@ -1,25 +1,31 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import PostList from "./components/PostList";
+import AddPost from "./components/AddPost";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "@apollo/react-hooks";
+import GetPosts from "./components/GetPosts";
+import io from "socket.io-client";
+const socket = io.connect("http://192.168.0.147:4000");
+//client setup
+
+const client = new ApolloClient({
+  uri: "http://192.168.0.147:4000/graphql"
+});
 
 function App() {
+  const [loading, setLoading] = useState(false)
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ApolloProvider client={client}>
+      <div id="main">
+        <h1>
+          {" "}
+          Reading list{" "}
+          {loading && <span style={{ fontSize: "medium", float: "left" }}>Loading...</span>}
+        </h1>
+        <GetPosts socket={socket} />
+        <AddPost socket={socket} />
+      </div>
+    </ApolloProvider>
   );
 }
 
